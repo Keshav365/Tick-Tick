@@ -1,0 +1,51 @@
+/* src/App.css or relevant CSS file */
+.task-wrapper {
+    padding: 24px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+  }
+  
+  .task {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 12px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 12px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .task-item {
+    margin-right: 16px;
+  }
+  
+  .label-text {
+    flex-grow: 1;
+  }
+  
+  .tag {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .tag.assigned {
+    background-color: #ffcc00;
+  }
+  
+  .tag.deadline {
+    background-color: #ff6666;
+  }
+  
+  .tag.approved {
+    background-color: #66cc66;
+  }
+  
+  .tag.progress {
+    background-color: #66b3ff;
+  }
+  
+  .tag.review {
+    background-color: #ff9966;
+  }
+  
