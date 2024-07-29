@@ -310,8 +310,8 @@ button {
     box-sizing: border-box;
     position: absolute;
     
-    top: 90%;
-    right: 18.4%;
+    top: 80px;
+    right: 350px;
     background: #454cad;
     // border-color: $theme;
     cursor: pointer;
@@ -375,6 +375,7 @@ button {
   flex: 1;
   overflow-y: auto;
   height: 80%;
+  overflow-y: hidden;
   // padding-right: 8px;
   // padding-right: 20px;
 }
@@ -384,7 +385,8 @@ button {
 }
 
 .task-wrapper {
-  height: 17%;
+  min-height: 10%;
+  max-height: 20%;
   overflow-y: scroll;
   overflow-x: hidden;
 }
@@ -485,12 +487,12 @@ label .label-text:before {
 
 .upcoming {
   border-bottom: 1px solid #ddd;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
   margin-bottom: 30px;
 }
 .Completed {
   border-bottom: 1px solid #ddd;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
   margin-bottom: 30px;
 }
 .Over .task label span.label-text{

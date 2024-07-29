@@ -1,60 +1,20 @@
-// src/App.js
-import React, { useState, useEffect } from 'react';
-import LeftBar from './components/LeftBar';
-import PageContent from './components/PageContent';
-import RightBar from './components/RightBar';
-import TaskForm from './components/TaskForm';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { AuthContextProvider } from './Context/AuthContext'; // Ensure this path is correct
+import Dashboard from './Dashboard';
+import Login from './components/Auth/Login';
+import Signup from './components/Auth/Signup';
 
-function App() {
-  const [userData, setUserData] = useState(true);
-  const [tasks, setTasks] = useState([]);
-
-  const addTask = (newTask) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-  };
-
-  useEffect(() => {
-    // Fetch tasks from backend or initialize with default data
-    const initialTasks = [
-      {
-        name: "Dashboard Design Implementation",
-        description: "Implement the design of the dashboard",
-        category: "Design",
-        tag: "UI",
-        startDate: "27/07/2024",
-        endDate: "29/07/2024",
-        note: "This task is important",
-        completed: true,
-        status: "Approved",
-      },
-      {
-        name: "Create a userflow",
-        description: "Design the userflow for the application",
-        category: "Design",
-        tag: "UX",
-        startDate: "",
-        endDate: "",
-        note: "",
-        completed: true,
-        status: "In Progress",
-      },
-      // Add more initial tasks as needed
-    ];
-    setTasks(initialTasks);
-  }, []);
-
+export default function App() {
   return (
-    <>
-    
-      <div className='task-manager0'></div>
-      <div className='task-manager'>
-        <LeftBar />
-        {/* <TaskForm onAddTask={addTask} /> */}
-        <PageContent tasks={tasks} onAddTask={addTask} />
-        <RightBar UserData={userData} />
-      </div>
-    </>
+    <AuthContextProvider> {/* Wrap Routes with AuthContextProvider */}
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/" element={<Dashboard />} />
+        </Routes>
+      </Router>
+    </AuthContextProvider>
   );
 }
-
-export default App;

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown, faDemocrat } from '@fortawesome/free-solid-svg-icons';
 import TaskForm from './TaskForm'; // Make sure TaskForm component is properly imported
 
-export default function PageContent({ tasks, onAddTask }) {
+export default function PageContent({ tasks, onAddTask, userId }) {
     const [visibleSection, setVisibleSection] = useState('All1');
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false);
 
@@ -78,7 +78,7 @@ export default function PageContent({ tasks, onAddTask }) {
                         checked={visibleSection === 'Important'}
                         onChange={() => handleNavClick('Important')}
                     />
-                    <label className="category" htmlFor="opt-2">Important</label>
+                    <label className="category" htmlFor="opt-2">Gantt Chart</label>
                 </div>
                 <div className="label-wrapper">
                     <input
@@ -202,7 +202,7 @@ export default function PageContent({ tasks, onAddTask }) {
                 <div className="addTask btn" onClick={handleAddTaskClick}>
                     Add a Task
                 </div>
-                {isTaskFormVisible && <TaskForm onClose={handleCloseTaskForm} onAddTask={onAddTask} />}
+                {isTaskFormVisible && <TaskForm onClose={handleCloseTaskForm} userId={userId} onAddTask={onAddTask} />}
             </div>
 
             <div className="tasks-wrapper" style={{ display: visibleSection === 'Important' ? 'block' : 'none' }} id="Important">

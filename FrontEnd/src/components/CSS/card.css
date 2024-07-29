@@ -140,3 +140,66 @@ h3 {
 .text-center {
     text-align: center;
 }
+
+.sideAlert {
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f44336;
+    color: white;
+    position: fixed; /* Changed to fixed to always show on screen */
+    bottom: 1vh;
+    right: 1vh; /* Adjusted to 1vh to ensure it's properly visible */
+    transform: translateX(0);
+    animation: slideInFromRight 5s forwards;
+    z-index: 1000; /* Added to ensure it appears above other elements */
+}
+
+.success {
+    background-color: green;
+}
+
+.sideAlert{
+    display: flex;
+    align-items: center;
+}
+.sideAlert p {
+    background-color: rgba(0,0,0,0);
+    margin-right: 2vh;
+    margin: 0; /* Added to remove any default margin */
+    padding: 0; /* Added to remove any default padding */
+    display: inline-block; /* Ensures proper alignment with close button */
+    font-size: 15px;
+}
+
+.closebtn {
+    background-color: rgba(0,0,0,0);
+    margin-right: 15px;
+    color: white;
+    font-weight: bold;
+    font-size: xx-large;
+    line-height: 20px;
+    cursor: pointer;
+    /* opacity: 0; */
+    transition: 0.3s;
+    display: inline-block; /* Ensures proper alignment with the paragraph */
+}
+
+/* Added animation keyframes for sliding in from the right */
+@keyframes slideInFromRight {
+    0% {
+        opacity: 1;
+        transform: translateX(100%);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100%{
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.closebtn:hover {
+    color: black;
+}
