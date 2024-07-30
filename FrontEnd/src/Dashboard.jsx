@@ -1,58 +1,70 @@
-// src/App.js
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import LeftBar from './components/LeftBar';
 import PageContent from './components/PageContent';
 import RightBar from './components/RightBar';
 import TaskForm from './components/TaskForm';
 import { AuthContext } from './Context/AuthContext';
 
-function Dashboard() {
+function Dashboard() {          
   const [userData, setUserData] = useState(true);
   const [tasks, setTasks] = useState([]);
+  const [currentTasks, setCurrentTasks] = useState([]);
+  const [upcomingTasks, setUpcomingTasks] = useState([]);
+  const [completedTasks, setCompletedTasks] = useState([]);
   const { currentUser } = useContext(AuthContext);
+
   const addTask = (newTask) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
   useEffect(() => {
-    // Fetch tasks from backend or initialize with default data
-    const initialTasks = [
-      {
-        name: "Dashboard Design Implementation",
-        description: "Implement the design of the dashboard",
-        category: "Design",
-        tag: "UI",
-        startDate: "27/07/2024",
-        endDate: "29/07/2024",
-        note: "This task is important",
-        completed: true,
-        status: "Approved",
-      },
-      {
-        name: "Create a userflow",
-        description: "Design the userflow for the application",
-        category: "Design",
-        tag: "UX",
-        startDate: "",
-        endDate: "",
-        note: "",
-        completed: true,
-        status: "In Progress",
-      },
-      // Add more initial tasks as needed
-    ];
-    setTasks(initialTasks);
-  }, []);
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8081/api/tasks?userId=${currentUser?.id}`);
+        const fetchedTasks = response.data;
+
+        // Parsing dates and categorizing tasks
+        const now = new Date();
+        const current = fetchedTasks.filter(task => new Date(task.end_date) > now);
+        const upcoming = fetchedTasks.filter(task => new Date(task.start_date) > now);
+        const completed = fetchedTasks.filter(task => task.completed === 1);
+
+        // Sort tasks by end_date
+        const sortByEndDate = (a, b) => new Date(a.end_date) - new Date(b.end_date);
+        current.sort(sortByEndDate);
+        upcoming.sort(sortByEndDate);
+        completed.sort(sortByEndDate);
+
+        setTasks(fetchedTasks);
+        setCurrentTasks(current);
+        setUpcomingTasks(upcoming);
+        setCompletedTasks(completed);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    if (currentUser) {
+      console.log("have current user", currentUser)
+      fetchTasks();
+    }
+  }, [currentUser]);
 
   return (
     <>
-      <div>{currentUser && <p>Welcome, {currentUser.username} (ID: {currentUser.id})</p>}
-      </div>
       <div className='task-manager0'></div>
       <div className='task-manager'>
         <LeftBar />
-        <PageContent tasks={tasks} onAddTask={addTask} userId={currentUser?.id} />
-        <RightBar UserData={userData} />
+        <PageContent
+          tasks={tasks}
+          currentTasks={currentTasks}
+          upcomingTasks={upcomingTasks}
+          completedTasks={completedTasks}
+          onAddTask={addTask}
+          userId={currentUser?.id}
+        />
+        <RightBar UserData={userData} tasks={tasks} currentTasks={currentTasks} />
       </div>
     </>
   );

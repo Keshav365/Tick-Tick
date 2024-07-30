@@ -1,47 +1,41 @@
-import React from 'react';
-import '../CSS/card.css';
-import { Link } from "react-router-dom";
-export default function Signup() {
-
-    return (
-        <>
-            <div className="loginPita">
-                {/* {error && (
-            <div className="sideAlert error">
-              <span className="closebtn" onClick={() => setError("")}>&times;</span>
-              <p>{error}</p>
+<div className="task-wrapper w3-animate-bottom">
+{completedTasks.length === 0 ? (
+    <div>No completed tasks</div>
+) : (
+    completedTasks.map((task, index) => (
+        <div className="task animateBottom" key={index}>
+            <div className="taskNameDrop">
+                <FontAwesomeIcon className='.task-icon' icon={faCaretDown}></FontAwesomeIcon>
+                <label htmlFor={`item-${index + 1}`}>
+                    <input
+                        className="task-item"
+                        name="task"
+                        type="checkbox"
+                        id={`item-${index + 1}`}
+                        checked={task.completed}
+                        onChange={() => { }}
+                    />
+                    <span className="label-text">{task.name}</span>
+                </label>
             </div>
-          )} */}
-                <div className="loginDiv">
-                    <div className='signUp'>
-                        <h1 className="logo-badge text-whitesmoke"></h1>
-                        <h3 className="text-whitesmoke">Sign Up</h3>
-
+            <span className='taskDates'>
+                {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
+                -
+                {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
+            </span>
+            {task.tag && (
+                <>
+                    <div className="tagAndTrash">
+                        <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
+                            {task.tag}
+                        </span>
+                        <span>
+                            <FontAwesomeIcon icon={faTrash} />
+                        </span>
                     </div>
-                    <div className="container-content">
-                        <form className="margin-t" >
-                            <div>
-                                <div className="form-group">
-                                    <input type="text" className="form-control" placeholder="Email" required />
-                                </div>
-                            </div>
-                            <div>
-                                <div className="form-group">
-                                    <input type="password" className="form-control" placeholder="Password" required />
-                                </div>
-                                <div className="form-group">
-                                    <input type="password" className="form-control" placeholder="Confirm Password" required />
-                                </div>
-                            </div>
-                            <div>
-                                <button type="submit" className="form-button button-l margin-b">Sign Up</button>
-                            </div>
-                            <p className="text-whitesmoke text-center"><small>Already have an account?, <a to="/login">Sign In</a></small></p>
-                        </form>
-                        <p className="margin-t text-whitesmoke"><small>SupaDrive &copy; 2024,</small></p>
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-}
+                </>
+            )}
+        </div>
+    ))
+)}
+</div>

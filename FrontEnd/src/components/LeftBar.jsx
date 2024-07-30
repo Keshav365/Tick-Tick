@@ -38,25 +38,6 @@ export default function LeftBar() {
                     <li className="item">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
                             strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                            className="feather feather-inbox" viewBox="0 0 24 24">
-                            <path d="M22 12h-6l-2 3h-4l-2-3H2" />
-                            <path
-                                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-                        </svg>
-                        <span>Inbox</span>
-                    </li>
-                    <li className="item">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                            className="feather feather-star">
-                            <polygon
-                                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
-                        <span> Today</span>
-                    </li>
-                    <li className="item">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"
-                            strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                             className="feather feather-calendar" viewBox="0 0 24 24">
                             <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
                             <path d="M16 2v4M8 2v4m-5 4h18" />
@@ -83,7 +64,7 @@ export default function LeftBar() {
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
-                        <span>Meetings</span>
+                        <span>All</span>
                     </li>
                     <li className="item">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor"

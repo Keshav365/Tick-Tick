@@ -1,4 +1,4 @@
-import mysql from 'mysql'
+import mysql from 'mysql';
 
 export const db = mysql.createConnection({
     host: 'localhost',
@@ -7,6 +7,7 @@ export const db = mysql.createConnection({
     database: 'ticktick',
 });
 
+// Connect to the database
 db.connect((err) => {
     if (err) {
         console.error('Error connecting to the database:', err);
@@ -15,3 +16,14 @@ db.connect((err) => {
     console.log('Connected to the database.');
 });
 
+// Utility function to query the database
+export const query = (sql, params) => {
+    return new Promise((resolve, reject) => {
+        db.query(sql, params, (error, results) => {
+            if (error) {
+                return reject(error);
+            }
+            resolve(results);
+        });
+    });
+};

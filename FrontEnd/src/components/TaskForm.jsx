@@ -114,7 +114,6 @@ export default function TaskForm({ onClose, onAddTask, userId }) {
               >
                 <option value="">Select Status</option>
                 <option value="assigned">Assigned</option>
-                <option value="deadline">Deadline</option>
                 <option value="approved">Approved</option>
                 <option value="progress">In Progress</option>
                 <option value="review">In Review</option>

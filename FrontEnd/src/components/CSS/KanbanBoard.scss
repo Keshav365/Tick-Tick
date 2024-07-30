@@ -1,0 +1,59 @@
+.kanbarboardDiv{
+    display: flex;
+    justify-content: space-between;
+    // width: 1000px;
+    overflow-x: hidden;
+}
+
+.kanban-board {
+//   display: flex;
+//   justify-content: space-between;
+//   width: 100%;
+//   overflow-x: scroll;
+  .kanban-column {
+    // width: 50em;
+    background-color: #f8f9fa;
+    padding: 1%;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin: 1%;
+
+    &.approved {
+      background-color: var(--tag-color-one);
+      color: var(--tag-color-text-one);
+    }
+
+    &.progress {
+      background-color: var(--tag-color-two);
+      color: var(--tag-color-text-two);
+    }
+
+    &.review {
+      background-color: var(--tag-color-three);
+      color: var(--tag-color-text-three);
+    }
+
+    &.waiting {
+      background-color: var(--tag-color-four);
+      color: var(--tag-color-text-four);
+    }
+    &.completed {
+      //   text-decoration: line-through;
+      background-color: var(--tag-color-four);
+      color: var(--tag-color-text-four);
+    }
+  }
+  .kanban-column h3 {
+    font-size: 20px;
+  }
+
+  .kanban-task {
+    background-color: #ffffff;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    color: black;
+    // width: 300px;
+  }
+}
