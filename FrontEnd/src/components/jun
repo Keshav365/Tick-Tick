@@ -1,41 +1,62 @@
-<div className="task-wrapper w3-animate-bottom">
-{completedTasks.length === 0 ? (
-    <div>No completed tasks</div>
-) : (
-    completedTasks.map((task, index) => (
-        <div className="task animateBottom" key={index}>
-            <div className="taskNameDrop">
-                <FontAwesomeIcon className='.task-icon' icon={faCaretDown}></FontAwesomeIcon>
-                <label htmlFor={`item-${index + 1}`}>
-                    <input
-                        className="task-item"
-                        name="task"
-                        type="checkbox"
-                        id={`item-${index + 1}`}
-                        checked={task.completed}
-                        onChange={() => { }}
-                    />
-                    <span className="label-text">{task.name}</span>
-                </label>
-            </div>
-            <span className='taskDates'>
-                {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
-                -
-                {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
-            </span>
-            {task.tag && (
-                <>
-                    <div className="tagAndTrash">
-                        <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
-                            {task.tag}
+<div className="task-wrapper">
+    {filteredTasks.length === 0 ? (
+        <div className='animateBottom'>No tasks available for {isToday ? 'today' : ` ${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}</div>
+    ) : (
+        filteredTasks.map((currentTask, index) => (
+            (selectedCategory === "All" || currentTask.category === selectedCategory) && (
+                <div className="taskKaPapa" key={index}>
+                    <div className="task animateBottom">
+                        <div className="taskNameDrop">
+                            <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle(index)}></FontAwesomeIcon>
+                            <label htmlFor={`item-${index + 1}`}>
+                                <input
+                                    className="task-item"
+                                    name="task"
+                                    type="checkbox"
+                                    id={`item-${index + 1}`}
+                                    checked={currentTask.completed}
+                                    onChange={() => { }}
+                                />
+                                <span className="label-text nowRap">{currentTask.name}</span>
+                            </label>
+                        </div>
+                        <span className='taskDates'>
+                            {currentTask.start_date && <span className="tag assigned">{formatStartDate(currentTask.start_date)}</span>}
+                            -
+                            {currentTask.end_date && <span className="tag deadline">{formatEndDate(currentTask.end_date)}</span>}
                         </span>
-                        <span>
-                            <FontAwesomeIcon icon={faTrash} />
-                        </span>
+                        {currentTask.tag && (
+                            <div className="tagAndTrash">
+                                <span className={`tag ${currentTask.tag.toLowerCase().replace(' ', '-')}`}>
+                                    {currentTask.tag}
+                                </span>
+                                <span>
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </span>
+                            </div>
+                        )}
                     </div>
-                </>
-            )}
-        </div>
-    ))
-)}
+                    {expandedTask === index && (
+                        <div className="animateBottom task-description">
+                            <div className="taskDaysRemaining">
+                                <div>
+                                    <span className="days">
+                                        <FontAwesomeIcon icon={faTeletype}></FontAwesomeIcon>
+                                    </span>
+                                    <span className='isRemaining'>{currentTask.category}</span>
+                                </div>
+                                <div>
+                                    <span className="days">
+                                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                    </span>
+                                    <span className='isRemaining'>{calculateRemainingDays(currentTask.end_date)} Days left</span>
+                                </div>
+                            </div>
+                            <p>{currentTask.description}</p>
+                        </div>
+                    )}
+                </div>
+            )
+        ))
+    )}
 </div>

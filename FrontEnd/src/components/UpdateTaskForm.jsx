@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CSS/card.css';
 
-export default function TaskForm({ onClose, onAddTask, userId }) {
+export default function UpdateTaskForm({ taskId, onClose, onUpdateTask, userId }) {
   const [nameLength, setNameLength] = useState(0);
   const [descLength, setDescLength] = useState(0);
   const [task, setTask] = useState({
@@ -13,6 +13,30 @@ export default function TaskForm({ onClose, onAddTask, userId }) {
     startDate: '',
     endDate: ''
   });
+
+  console.log('Updating task with ID:', taskId);
+
+  useEffect(() => {
+    const fetchTask = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8081/api/tasks?id=${taskId}&userId=${userId}`);
+        const fetchedTask = res.data;
+
+        // Format the startDate and endDate if they are present
+        setTask({
+          ...fetchedTask,
+          startDate: fetchedTask.start_date ? fetchedTask.start_date.split('T')[0] : '', // YYYY-MM-DD for input type="date"
+          endDate: fetchedTask.end_date ? fetchedTask.end_date.slice(0, 16) : '', // YYYY-MM-DDTHH:MM for input type="datetime-local"
+        });
+        setNameLength(fetchedTask.name.length);
+        setDescLength(fetchedTask.description.length);
+      } catch (error) {
+        console.log('Error fetching task:', error);
+      }
+    };
+
+    fetchTask();
+  }, [taskId, userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,31 +54,21 @@ export default function TaskForm({ onClose, onAddTask, userId }) {
     e.preventDefault();
     const taskWithUserId = { ...task, userId };
 
-    // Log the task object before sending it
-    console.log('Task object being sent:', taskWithUserId);
-
     try {
-      const res = await axios.post('http://localhost:8081/api/tasks', taskWithUserId);
-      console.log('Response from server:', res.data);
-      onAddTask(res.data); // Use the data returned from the server
+      const res = await axios.put(`http://localhost:8081/api/tasks/${taskId}`, taskWithUserId);
+      onUpdateTask(res.data);
       onClose();
     } catch (error) {
-      console.log('Error adding task:', error);
+      console.log('Error updating task:', error);
       if (error.response) {
         console.log('Error response data:', error.response.data);
-        console.log('Error response status:', error.response.status);
-        console.log('Error response headers:', error.response.headers);
-      } else if (error.request) {
-        console.log('Error request data:', error.request);
-      } else {
-        console.log('Error message:', error.message);
       }
     }
   };
 
   return (
     <div className="loginDiv">
-      <h3 className="text-whitesmoke">Add New Task</h3>
+      <h3 className="text-whitesmoke">Update Task</h3>
       <div className="container-content">
         <form onSubmit={handleSubmit}>
           <div>
@@ -109,6 +123,8 @@ export default function TaskForm({ onClose, onAddTask, userId }) {
                 value={task.tag}
                 required
               >
+                {console.log(task.startDate)}
+                {console.log(task.endDate)}
                 <option value="">Select Status</option>
                 <option value="assigned">Assigned</option>
                 <option value="approved">Approved</option>
@@ -139,7 +155,7 @@ export default function TaskForm({ onClose, onAddTask, userId }) {
               />
             </div>
           </div>
-          <button type="submit" className="form-button button-l margin-b">Add Task</button>
+          <button type="submit" className="form-button button-l margin-b">Update Task</button>
           <button type="button" className="form-button button-l margin-b" onClick={onClose}>Cancel</button>
         </form>
       </div>

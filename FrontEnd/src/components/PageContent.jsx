@@ -1,15 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown, faCaretDown, faDemocrat, faTrash, faBoltLightning, faChartBar, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown, faCaretDown, faDemocrat, faTrash, faBoltLightning, faChartBar, faClock, faTeletype, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import TaskForm from './TaskForm'; // Make sure TaskForm component is properly imported
 import KanbanBoard from './KanbanBoard.jsx';
+import UpdateTaskForm from './UpdateTaskForm';
+import axios from 'axios';
 
-export default function PageContent({ currenttasks, tasks, onAddTask, userId }) {
+export default function PageContent({ currenttasks, tasks, onAddTask, userId, selectedCategory }) {
     const [visibleSection, setVisibleSection] = useState('All1');
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [expandedTask, setExpandedTask] = useState(null);
+    const [expandedTask1, setExpandedTask1] = useState(null);
+    const [expandedTask2, setExpandedTask2] = useState(null);
+    const [showUpdateForm, setShowUpdateForm] = useState(false);
+    const [currentTaskId, setCurrentTaskId] = useState(null);
 
+
+    const handleCompletionToggle = async (currentTask) => {
+        try {
+          const newCompletedStatus = !currentTask.completed; // Toggle the completion status
+          await axios.put(`http://localhost:8081/api/tasks/toggle-completion/${currentTask.id}`, {
+            completed: newCompletedStatus,
+            userId: currentTask.userId // Pass the current user's ID
+          });
+      
+          // Optionally, refresh the task list or update the local state
+        //   setCurrentTask(prev => ({ ...prev, completed: newCompletedStatus }));
+        } catch (error) {
+          console.error('Error updating task completion:', error);
+        }
+      };
+    const handleEditClick = (taskId) => {
+        setCurrentTaskId(taskId);
+        setShowUpdateForm(true);
+    };
+
+    const handleCloseUpdateForm = () => {
+        setShowUpdateForm(false);
+        setCurrentTaskId(null);
+    };
+
+    const handleUpdateTask = (updatedTask) => {
+        // Handle the updated task (e.g., update the task list in state)
+        console.log('Updated task:', updatedTask);
+        setShowUpdateForm(false);
+        setCurrentTaskId(null);
+    };
+
+    console.log(selectedCategory)
     const handleNavClick = (sectionId) => {
         setVisibleSection(sectionId);
     };
@@ -63,17 +102,18 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
         const taskStartDate = new Date(task.start_date);
         const taskEndDate = new Date(task.end_date);
         if (isToday) {
-            return taskStartDate < today && taskEndDate > today;
-        } else {
+            return taskStartDate < today && taskEndDate > today && task.completed !== 1;
+        } else if(task.completed !==1) {
             return taskEndDate.toDateString() === newDate.toDateString();
         }
+        
     }).sort((a, b) => new Date(a.end_date) - new Date(b.end_date));
 
     const upcomingTasks = tasks.filter(task => !task.completed && new Date(task.end_date) >= newDate)
-                               .sort((a, b) => new Date(a.end_date) - new Date(b.end_date));
+        .sort((a, b) => new Date(a.end_date) - new Date(b.end_date));
 
     const completedTasks = tasks.filter(task => task.completed)
-                                .sort((a, b) => new Date(a.end_date) - new Date(b.end_date));
+        .sort((a, b) => new Date(a.end_date) - new Date(b.end_date));
 
     // Function to format start_date
     const formatStartDate = (dateString) => {
@@ -85,6 +125,12 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
 
     const handleTaskToggle = (index) => {
         setExpandedTask(expandedTask === index ? null : index); // Toggle the expanded task
+    };
+    const handleTaskToggle1 = (index) => {
+        setExpandedTask1(expandedTask1 === index ? null : index); // Toggle the expanded task
+    };
+    const handleTaskToggle2 = (index) => {
+        setExpandedTask2(expandedTask2 === index ? null : index); // Toggle the expanded task
     };
 
     // Function to format end_date
@@ -159,32 +205,33 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
             <div className="tasks-wrapper" style={{ display: visibleSection === 'All1' ? 'block' : 'none' }} id="All1">
                 <div className="task-wrapper">
                     {filteredTasks.length === 0 ? (
-                        <div className='animateBottom'>No tasks available for {isToday ? 'today' : ` ${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}</div>
+                        <div className='animateBottom'>No submissions for <b> {isToday ? 'today' : ` ${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}</b></div>
                     ) : (
                         filteredTasks.map((currentTask, index) => (
-                            <div className="taskKaPapa">
-                                <div className="task animateBottom" key={index}>
-                                    <div className="taskNameDrop">
-                                        <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle(index)}></FontAwesomeIcon>
-                                        <label htmlFor={`item-${index + 1}`}>
-                                            <input
-                                                className="task-item"
-                                                name="task"
-                                                type="checkbox"
-                                                id={`item-${index + 1}`}
-                                                checked={currentTask.completed}
-                                                onChange={() => { }}
-                                            />
-                                            <span className="label-text">{currentTask.name}</span>
-                                        </label>
-                                    </div>
-                                    <span className='taskDates'>
-                                        {currentTask.start_date && <span className="tag assigned">{formatStartDate(currentTask.start_date)}</span>}
-                                        -
-                                        {currentTask.end_date && <span className="tag deadline">{formatEndDate(currentTask.end_date)}</span>}
-                                    </span>
-                                    {currentTask.tag && (
-                                        <>
+                            (selectedCategory === "All" || currentTask.category === selectedCategory ) && (currentTask.completed === 0) && (
+                                <div className="taskKaPapa" key={index}>
+                                    <div className="task animateBottom">
+                                        <div className="taskNameDrop">
+                                            <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle(index)}></FontAwesomeIcon>
+                                            <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(currentTask.id)}></FontAwesomeIcon>
+                                            <label className='newFlex' htmlFor={`item-${index + 1}`}>
+                                                <input
+                                                    className="task-item"
+                                                    name="task"
+                                                    type="checkbox"
+                                                    id={`item-${index + 1}`}
+                                                    checked={currentTask.completed}
+                                                    onChange={() => {handleCompletionToggle(currentTask) }}
+                                                />
+                                            </label>
+                                            <span className="label-text nowRap">{currentTask.name}</span>
+                                        </div>
+                                        <span className='taskDates'>
+                                            {currentTask.start_date && <span className="tag assigned">{formatStartDate(currentTask.start_date)}</span>}
+                                            -
+                                            {currentTask.end_date && <span className="tag deadline">{formatEndDate(currentTask.end_date)}</span>}
+                                        </span>
+                                        {currentTask.tag && (
                                             <div className="tagAndTrash">
                                                 <span className={`tag ${currentTask.tag.toLowerCase().replace(' ', '-')}`}>
                                                     {currentTask.tag}
@@ -193,25 +240,29 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
                                                     <FontAwesomeIcon icon={faTrash} />
                                                 </span>
                                             </div>
-                                        </>
-                                    )}
-                                </div>
-                                {expandedTask === index && (
-                                    <>
+                                        )}
+                                    </div>
+                                    {expandedTask === index && (
                                         <div className="animateBottom task-description">
                                             <div className="taskDaysRemaining">
-                                                <span className="days">
-                                                    <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                                                </span>
-                                                <span className='isRemaining'>{calculateRemainingDays(currentTask.end_date)} Days left</span>
+                                                <div>
+                                                    <span className="days">
+                                                        <FontAwesomeIcon icon={faTeletype}></FontAwesomeIcon>
+                                                    </span>
+                                                    <span className='isRemaining'>{currentTask.category}</span>
+                                                </div>
+                                                <div>
+                                                    <span className="days">
+                                                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                                    </span>
+                                                    <span className='isRemaining'>{calculateRemainingDays(currentTask.end_date)} Days left</span>
+                                                </div>
                                             </div>
-                                            <p> {currentTask.description} </p>
-
+                                            <p>{currentTask.description}</p>
                                         </div>
-                                    </>
-                                )}
-                            </div>
-
+                                    )}
+                                </div>
+                            )
                         ))
                     )}
                 </div>
@@ -222,28 +273,29 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
                         <div>No upcoming tasks</div>
                     ) : (
                         upcomingTasks.map((task, index) => (
-                            <div className="animateBottom task" key={index}>
-                                <div className="taskNameDrop">
-                                    <FontAwesomeIcon className='.task-icon' icon={faCaretDown}></FontAwesomeIcon>
-                                    <label htmlFor={`item-${index + 1}`}>
-                                        <input
-                                            className="task-item"
-                                            name="task"
-                                            type="checkbox"
-                                            id={`item-${index + 1}`}
-                                            checked={task.completed}
-                                            onChange={() => { }}
-                                        />
-                                        <span className="label-text">{task.name}</span>
-                                    </label>
-                                </div>
-                                <span className='taskDates'>
-                                    {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
-                                    -
-                                    {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
-                                </span>
-                                {task.tag && (
-                                    <>
+                            <div className="taskKaPapa" key={index}>
+                                <div className="animateBottom task" key={index}>
+                                    <div className="taskNameDrop">
+                                        <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle1(index)}></FontAwesomeIcon>
+                                        <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(task.id)}></FontAwesomeIcon>
+                                        <label htmlFor={`item-${index + 1}`}>
+                                            <input
+                                                className="task-item"
+                                                name="task"
+                                                type="checkbox"
+                                                id={`item-${index + 1}`}
+                                                checked={task.completed}
+                                                onChange={() => {handleCompletionToggle(task) }}
+                                            />
+                                        </label>
+                                        <span className="label-text nowRap">{task.name}</span>
+                                    </div>
+                                    <span className='taskDates'>
+                                        {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
+                                        -
+                                        {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
+                                    </span>
+                                    {task.tag && (
                                         <div className="tagAndTrash">
                                             <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
                                                 {task.tag}
@@ -252,9 +304,29 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
                                                 <FontAwesomeIcon icon={faTrash} />
                                             </span>
                                         </div>
-                                    </>
+                                    )}
+                                </div>
+                                {expandedTask1 === index && (
+                                    <div className="animateBottom task-description">
+                                        <div className="taskDaysRemaining">
+                                            <div>
+                                                <span className="days">
+                                                    <FontAwesomeIcon icon={faTeletype}></FontAwesomeIcon>
+                                                </span>
+                                                <span className='isRemaining'>{task.category}</span>
+                                            </div>
+                                            <div>
+                                                <span className="days">
+                                                    <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                                </span>
+                                                <span className='isRemaining'>{calculateRemainingDays(task.end_date)} Days left</span>
+                                            </div>
+                                        </div>
+                                        <p>{task.description}</p>
+                                    </div>
                                 )}
                             </div>
+
                         ))
                     )}
                 </div>
@@ -265,28 +337,29 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
                         <div>No completed tasks</div>
                     ) : (
                         completedTasks.map((task, index) => (
-                            <div className="task animateBottom" key={index}>
-                                <div className="taskNameDrop">
-                                    <FontAwesomeIcon className='.task-icon' icon={faCaretDown}></FontAwesomeIcon>
-                                    <label htmlFor={`item-${index + 1}`}>
-                                        <input
-                                            className="task-item"
-                                            name="task"
-                                            type="checkbox"
-                                            id={`item-${index + 1}`}
-                                            checked={task.completed}
-                                            onChange={() => { }}
-                                        />
-                                        <span className="label-text">{task.name}</span>
-                                    </label>
-                                </div>
-                                <span className='taskDates'>
-                                    {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
-                                    -
-                                    {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
-                                </span>
-                                {task.tag && (
-                                    <>
+                            <div className="taskKaPapa" key={index}>
+                                <div className="animateBottom task" key={index}>
+                                    <div className="taskNameDrop">
+                                        <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle2(index)}></FontAwesomeIcon>
+                                        <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(task.id)}></FontAwesomeIcon>
+                                        <label htmlFor={`item-${index + 1}`}>
+                                            <input
+                                                className="task-item"
+                                                name="task"
+                                                type="checkbox"
+                                                id={`item-${index + 1}`}
+                                                checked={task.completed}
+                                                onChange={() => {handleCompletionToggle(task) }}
+                                            />
+                                        </label>
+                                        <span className="label-text nowRap">{task.name}</span>
+                                    </div>
+                                    <span className='taskDates'>
+                                        {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
+                                        -
+                                        {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
+                                    </span>
+                                    {task.tag && (
                                         <div className="tagAndTrash">
                                             <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
                                                 {task.tag}
@@ -295,9 +368,29 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
                                                 <FontAwesomeIcon icon={faTrash} />
                                             </span>
                                         </div>
-                                    </>
+                                    )}
+                                </div>
+                                {expandedTask2 === index && (
+                                    <div className="animateBottom task-description">
+                                        <div className="taskDaysRemaining">
+                                            <div>
+                                                <span className="days">
+                                                    <FontAwesomeIcon icon={faTeletype}></FontAwesomeIcon>
+                                                </span>
+                                                <span className='isRemaining'>{task.category}</span>
+                                            </div>
+                                            <div>
+                                                <span className="days">
+                                                    <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                                </span>
+                                                <span className='isRemaining'>{calculateRemainingDays(task.end_date)} Days left</span>
+                                            </div>
+                                        </div>
+                                        <p>{task.description}</p>
+                                    </div>
                                 )}
                             </div>
+
                         ))
                     )}
                 </div>
@@ -323,6 +416,14 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId }) 
                     onAddTask={onAddTask}
                     currenttasks={currenttasks}
                     userId={userId}
+                />
+            )}
+            {showUpdateForm && currentTaskId && (
+                <UpdateTaskForm
+                    taskId={currentTaskId}
+                    userId={userId}
+                    onClose={handleCloseUpdateForm}
+                    onUpdateTask={handleUpdateTask}
                 />
             )}
         </div>
