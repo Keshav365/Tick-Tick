@@ -28,7 +28,34 @@ export const toggleTaskCompletion = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+// Mark a task as deleted
+export const toggleTaskDeletion = async (req, res) => {
+  const taskId = req.params.id; // Get taskId from request parameters
+  const { deleted, userId } = req.body; // Expect a boolean value for completed status and userId
 
+  try {
+    // Check if the task belongs to the user
+    const taskCheck = await query('SELECT * FROM tasks WHERE id = ? AND userId = ?', [taskId, userId]);
+
+    if (!taskCheck || taskCheck.length === 0) {
+      return res.status(403).json({ error: "You do not have permission to modify this task." });
+    }
+
+    const result = await query(
+      'UPDATE tasks SET deleted = ? WHERE id = ?',
+      [deleted ? 1 : 0, taskId] // Set completed to 1 (true) or 0 (false)
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Task not found." });
+    }
+
+    res.status(200).json({ message: "Task deletion status updated successfully." });
+  } catch (err) {
+    console.error("Error updating task deletion status:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 // Create a new task
 export const createTask = async (req, res) => {
@@ -80,24 +107,6 @@ export const updateTask = async (req, res) => {
     res.status(200).json({ message: "Task updated successfully." });
   } catch (err) {
     console.error("Error updating task:", err);
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// Mark a task as deleted
-export const deleteTask = async (req, res) => {
-  const taskId = req.params.id; // Get taskId from request parameters
-
-  try {
-    const result = await query('UPDATE tasks SET deleted = 1 WHERE id = ?', [taskId]);
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "Task not found." });
-    }
-
-    res.status(200).json({ message: "Task marked as deleted successfully." });
-  } catch (err) {
-    console.error("Error marking task as deleted:", err);
     res.status(500).json({ error: err.message });
   }
 };

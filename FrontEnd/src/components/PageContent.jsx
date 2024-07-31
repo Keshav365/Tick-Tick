@@ -19,18 +19,34 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
 
     const handleCompletionToggle = async (currentTask) => {
         try {
-          const newCompletedStatus = !currentTask.completed; // Toggle the completion status
-          await axios.put(`http://localhost:8081/api/tasks/toggle-completion/${currentTask.id}`, {
-            completed: newCompletedStatus,
-            userId: currentTask.userId // Pass the current user's ID
-          });
-      
-          // Optionally, refresh the task list or update the local state
-        //   setCurrentTask(prev => ({ ...prev, completed: newCompletedStatus }));
+            const newCompletedStatus = !currentTask.completed; // Toggle the completion status
+            await axios.put(`http://localhost:8081/api/tasks/toggle-completion/${currentTask.id}`, {
+                completed: newCompletedStatus,
+                userId: currentTask.userId // Pass the current user's ID
+            });
+
+            // Optionally, refresh the task list or update the local state
+            //   setCurrentTask(prev => ({ ...prev, completed: newCompletedStatus }));
         } catch (error) {
-          console.error('Error updating task completion:', error);
+            console.error('Error updating task completion:', error);
         }
-      };
+    };
+    const handleDeletionToggle = async (currentTask) => {
+        try {
+            const newDeleteStatus = !currentTask.deleted; // Toggle the completion status
+            console.log("oh No, you tryna deleteme:\n taskid: ", currentTask.id, "\n taskname: ", currentTask.name, "\n Delete Status: ", currentTask.deleted ? 'Deleted' : 'Zinda hun abhi')
+            await axios.put(`http://localhost:8081/api/tasks/toggle-deletion/${currentTask.id}`, {
+                deleted: newDeleteStatus,
+                userId: currentTask.userId // Pass the current user's ID
+            });
+
+            // Optionally, refresh the task list or update the local state
+            //   setCurrentTask(prev => ({ ...prev, completed: newCompletedStatus }));
+        } catch (error) {
+            console.error('Error updating task Deletion:', error);
+        }
+    };
+
     const handleEditClick = (taskId) => {
         setCurrentTaskId(taskId);
         setShowUpdateForm(true);
@@ -103,10 +119,10 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
         const taskEndDate = new Date(task.end_date);
         if (isToday) {
             return taskStartDate < today && taskEndDate > today && task.completed !== 1;
-        } else if(task.completed !==1) {
+        } else if (task.completed !== 1) {
             return taskEndDate.toDateString() === newDate.toDateString();
         }
-        
+
     }).sort((a, b) => new Date(a.end_date) - new Date(b.end_date));
 
     const upcomingTasks = tasks.filter(task => !task.completed && new Date(task.end_date) >= newDate)
@@ -147,12 +163,27 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
     return (
         <div className="page-content">
             <div className="header">
-                <div className="headerIcon">
-                    <FontAwesomeIcon icon={faArrowUp} onClick={handleArrowDownClick} />
-                    <FontAwesomeIcon icon={faArrowDown} onClick={handleArrowUpClick} />
-                </div>
-                &nbsp;&nbsp;
-                <div className="headerName">Tasks for {isToday ? 'Today' : `${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}</div>
+                {selectedCategory === 'deleted' ? (
+                    <>
+                        <div className="headerIcon">
+                            <FontAwesomeIcon icon={faArrowUp}/>
+                            <FontAwesomeIcon icon={faArrowDown}/>
+                        </div>
+                        &nbsp; &nbsp;
+                        <div className="headerName">Trash
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="headerIcon">
+                            <FontAwesomeIcon icon={faArrowUp} onClick={handleArrowDownClick} />
+                            <FontAwesomeIcon icon={faArrowDown} onClick={handleArrowUpClick} />
+                        </div>
+                        &nbsp; &nbsp;
+                        <div className="headerName">Tasks for {isToday ? 'Today' : `${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}
+                        </div>
+                    </>
+                )}
             </div>
 
             <div className="content-categories">
@@ -208,7 +239,7 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                         <div className='animateBottom'>No submissions for <b> {isToday ? 'today' : ` ${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}</b></div>
                     ) : (
                         filteredTasks.map((currentTask, index) => (
-                            (selectedCategory === "All" || currentTask.category === selectedCategory ) && (currentTask.completed === 0) && (
+                            ((selectedCategory === "All" || currentTask.category === selectedCategory) && currentTask.deleted === 0) && (currentTask.completed === 0) && (
                                 <div className="taskKaPapa" key={index}>
                                     <div className="task animateBottom">
                                         <div className="taskNameDrop">
@@ -221,7 +252,7 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                                                     type="checkbox"
                                                     id={`item-${index + 1}`}
                                                     checked={currentTask.completed}
-                                                    onChange={() => {handleCompletionToggle(currentTask) }}
+                                                    onChange={() => { handleCompletionToggle(currentTask) }}
                                                 />
                                             </label>
                                             <span className="label-text nowRap">{currentTask.name}</span>
@@ -237,7 +268,7 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                                                     {currentTask.tag}
                                                 </span>
                                                 <span>
-                                                    <FontAwesomeIcon icon={faTrash} />
+                                                    <FontAwesomeIcon icon={faTrash} onClick={() => { handleDeletionToggle(currentTask) }} />
                                                 </span>
                                             </div>
                                         )}
@@ -285,7 +316,7 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                                                 type="checkbox"
                                                 id={`item-${index + 1}`}
                                                 checked={task.completed}
-                                                onChange={() => {handleCompletionToggle(task) }}
+                                                onChange={() => { handleCompletionToggle(task) }}
                                             />
                                         </label>
                                         <span className="label-text nowRap">{task.name}</span>
@@ -301,7 +332,7 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                                                 {task.tag}
                                             </span>
                                             <span>
-                                                <FontAwesomeIcon icon={faTrash} />
+                                                <FontAwesomeIcon icon={faTrash} onChange={() => { handleDeletionToggle(task) }} />
                                             </span>
                                         </div>
                                     )}
@@ -349,7 +380,7 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                                                 type="checkbox"
                                                 id={`item-${index + 1}`}
                                                 checked={task.completed}
-                                                onChange={() => {handleCompletionToggle(task) }}
+                                                onChange={() => { handleCompletionToggle(task) }}
                                             />
                                         </label>
                                         <span className="label-text nowRap">{task.name}</span>
@@ -365,7 +396,7 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                                                 {task.tag}
                                             </span>
                                             <span>
-                                                <FontAwesomeIcon icon={faTrash} />
+                                                <FontAwesomeIcon icon={faTrash} onChange={() => { handleDeletionToggle(task) }} />
                                             </span>
                                         </div>
                                     )}
