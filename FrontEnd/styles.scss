@@ -124,11 +124,15 @@ button {
 
 .left-content {
   padding: 40px;
+
+  .calendarButton {
+    font-size: 14px;
+  }
 }
 
 .item {
   @extend %flex;
-  color: var(--main-color);
+  color: var(--secondary-color);
   margin-bottom: 14px;
   font-weight: 500;
 
@@ -144,7 +148,7 @@ button {
   margin-top: 50px;
 
   .item {
-    color: var(--secondary-color);
+    // color: var(--secondary-color);
   }
 }
 
@@ -471,7 +475,7 @@ button {
   margin: 10px 0;
   padding: 10px 0;
 }
-.long{
+.long {
   max-height: 100%;
 }
 
@@ -508,7 +512,7 @@ button {
     // width: 100%;
     text-align: justify;
   }
-  
+
   .taskDaysRemaining {
     margin: 0;
     padding: 2px 12px;
@@ -531,7 +535,7 @@ button {
     align-items: center;
   }
 }
-.newFlex{
+.newFlex {
   display: flex;
   align-items: center;
 }
@@ -578,7 +582,7 @@ button {
       width: 700px;
       // font-size: 100px;
     }
-    .nowRap::-webkit-scrollbar{
+    .nowRap::-webkit-scrollbar {
       display: none;
     }
   }
@@ -650,7 +654,6 @@ label .label-text {
   padding: 4px 8px;
   border-radius: 20px;
 
-  
   &.approved {
     background-color: var(--tag-color-one);
     color: var(--tag-color-text-one);

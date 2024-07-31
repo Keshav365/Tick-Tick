@@ -6,7 +6,7 @@ import KanbanBoard from './KanbanBoard.jsx';
 import UpdateTaskForm from './UpdateTaskForm';
 import axios from 'axios';
 
-export default function PageContent({ currenttasks, tasks, onAddTask, userId, selectedCategory }) {
+export default function PageContent({ currenttasks,selectedDateFromLD, tasks, onAddTask, userId, selectedCategory }) {
     const [visibleSection, setVisibleSection] = useState('All1');
     const [isTaskFormVisible, setIsTaskFormVisible] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -28,7 +28,12 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
         }
     };
 
+    //  selectedDateFromLD = undefined;
+     useEffect(() => {        
 
+        setSelectedDate(selectedDateFromLD)
+    
+      }, [selectedDateFromLD]);
     const handleCompletionToggle = async (currentTask) => {
         try {
             const newCompletedStatus = !currentTask.completed; // Toggle the completion status
@@ -91,6 +96,8 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
 
     const handleArrowUpClick = () => {
         setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)));
+        console.log(selectedDate)
+        console.log(selectedDateFromLD)
     };
 
     const handleArrowDownClick = () => {

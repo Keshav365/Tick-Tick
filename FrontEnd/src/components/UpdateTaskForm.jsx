@@ -113,6 +113,8 @@ export default function UpdateTaskForm({ taskId, onClose, onUpdateTask, userId }
                 <option value="Work">Work</option>
                 <option value="Personal">Personal</option>
                 <option value="General">General</option>
+                <option value="Festival">Festival</option>
+                <option value="Concerts">Concerts</option>
               </select>
             </div>
             <div className="form-group">

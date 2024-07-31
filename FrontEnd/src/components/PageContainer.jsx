@@ -6,7 +6,7 @@ export default function PageContainer({ currenttasks, tasks, onAddTask, userId }
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [selectedDate, setSelectedDate] = useState(new Date());
     // const [tasks, setTasks] = useState([]); // Initialize with empty array or fetch from your data source
-
+console.log("hahahahhah", selectedDate)
     useEffect(() => {
         // Fetch tasks from your data source and set them
         // Example: setTasks(fetchedTasks);
@@ -34,7 +34,7 @@ export default function PageContainer({ currenttasks, tasks, onAddTask, userId }
                 onAddTask={onAddTask}
                 userId={userId} // Replace with actual userId
                 selectedCategory={selectedCategory}
-                selectedDate={selectedDate}
+                selectedDateFromLD={selectedDate}
                 onDateChange={handleDateChange} // Pass down date change handler
             />
         </>
