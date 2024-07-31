@@ -471,6 +471,9 @@ button {
   margin: 10px 0;
   padding: 10px 0;
 }
+.long{
+  max-height: 100%;
+}
 
 ::-webkit-scrollbar {
   -webkit-appearance: none;
@@ -521,8 +524,9 @@ button {
     border-radius: 10px;
   }
   .taskDaysRemaining > div {
+    width: 25%;
     margin-left: 3px;
-    // justify-content: space-between;
+    justify-content: space-between;
     display: flex;
     align-items: center;
   }
@@ -637,7 +641,7 @@ label .label-text {
   justify-content: space-between;
 
   padding-right: 1%;
-  width: 15%;
+  width: 20%;
 }
 .tag {
   display: flex;

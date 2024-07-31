@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown, faCaretDown, faDemocrat, faTrash, faBoltLightning, faChartBar, faClock, faTeletype, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown, faCaretDown, faDemocrat, faTrash, faBoltLightning, faChartBar, faClock, faTeletype, faAddressCard, faBiking, faSkiing, faTasks, faPenToSquare, faRefresh } from '@fortawesome/free-solid-svg-icons';
 import TaskForm from './TaskForm'; // Make sure TaskForm component is properly imported
 import KanbanBoard from './KanbanBoard.jsx';
 import UpdateTaskForm from './UpdateTaskForm';
@@ -15,6 +15,18 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
     const [expandedTask2, setExpandedTask2] = useState(null);
     const [showUpdateForm, setShowUpdateForm] = useState(false);
     const [currentTaskId, setCurrentTaskId] = useState(null);
+    const getIcon = (iconType) => {
+        switch (iconType) {
+            case 'Work':
+                return faAddressCard;
+            case 'General':
+                return faBiking;
+            case 'Personel':
+                return faSkiing;
+            default:
+                return faTasks; // Default icon
+        }
+    };
 
 
     const handleCompletionToggle = async (currentTask) => {
@@ -160,14 +172,29 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
         const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
         return `${day}/${month}, ${hours}:${minutes} ${ampm}`;
     };
+
+    const timeRem = (task) => {
+        const remainingDays = calculateRemainingDays(task.end_date);
+
+        if (remainingDays === 1) {
+            return (
+                <> {remainingDays} Day left </>
+            );
+        } else {
+            return (
+                <> {remainingDays} Days left </>
+            );
+        }
+    };
+
     return (
         <div className="page-content">
             <div className="header">
                 {selectedCategory === 'deleted' ? (
                     <>
                         <div className="headerIcon">
-                            <FontAwesomeIcon icon={faArrowUp}/>
-                            <FontAwesomeIcon icon={faArrowDown}/>
+                            <FontAwesomeIcon icon={faArrowUp} />
+                            <FontAwesomeIcon icon={faArrowDown} />
                         </div>
                         &nbsp; &nbsp;
                         <div className="headerName">Trash
@@ -233,200 +260,293 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
                 </div>
             </div>
 
-            <div className="tasks-wrapper" style={{ display: visibleSection === 'All1' ? 'block' : 'none' }} id="All1">
-                <div className="task-wrapper">
-                    {filteredTasks.length === 0 ? (
-                        <div className='animateBottom'>No submissions for <b> {isToday ? 'today' : ` ${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}</b></div>
-                    ) : (
-                        filteredTasks.map((currentTask, index) => (
-                            ((selectedCategory === "All" || currentTask.category === selectedCategory) && currentTask.deleted === 0) && (currentTask.completed === 0) && (
-                                <div className="taskKaPapa" key={index}>
-                                    <div className="task animateBottom">
-                                        <div className="taskNameDrop">
-                                            <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle(index)}></FontAwesomeIcon>
-                                            <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(currentTask.id)}></FontAwesomeIcon>
-                                            <label className='newFlex' htmlFor={`item-${index + 1}`}>
-                                                <input
-                                                    className="task-item"
-                                                    name="task"
-                                                    type="checkbox"
-                                                    id={`item-${index + 1}`}
-                                                    checked={currentTask.completed}
-                                                    onChange={() => { handleCompletionToggle(currentTask) }}
-                                                />
-                                            </label>
-                                            <span className="label-text nowRap">{currentTask.name}</span>
+            {selectedCategory === 'deleted' ? (
+                <>
+                    <div className="tasks-wrapper" style={{ display: visibleSection === 'All1' ? 'block' : 'none' }} id="All1">
+                        <div className="task-wrapper long w3-animate-bottom">
+                            {tasks.length === 0 ? (
+                                <div>Nothing to see here</div>
+                            ) : (
+                                tasks.map((task, index) => (
+
+                                    <div className="taskKaPapa" key={index}>
+                                        {
+                                            task.deleted === 1 ? (
+                                                <>
+                                                    <div className="animateBottom task" key={index}>
+                                                        <div className="taskNameDrop">
+                                                            <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle1(index)}></FontAwesomeIcon>
+                                                            <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(task.id)}></FontAwesomeIcon>
+                                                            <label htmlFor={`item-${index + 1}`}>
+                                                                <input
+                                                                    className="task-item"
+                                                                    name="task"
+                                                                    type="checkbox"
+                                                                    id={`item-${index + 1}`}
+                                                                    checked={task.completed}
+                                                                    onChange={() => { handleCompletionToggle(task) }}
+                                                                />
+                                                            </label>
+                                                            <span className="label-text nowRap">{task.name}</span>
+                                                        </div>
+                                                        <span className='taskDates'>
+                                                            {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
+                                                            -
+                                                            {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
+                                                        </span>
+                                                        {task.tag && (
+                                                            <div className="tagAndTrash">
+                                                                <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
+                                                                    {task.tag}
+                                                                </span>
+                                                                &nbsp;
+                                                                <span>
+                                                                    <FontAwesomeIcon icon={faRefresh} onClick={() => { handleDeletionToggle(task) }} />
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {expandedTask1 === index && (
+                                                        <div className="animateBottom task-description">
+                                                            <div className="taskDaysRemaining">
+                                                                <div>
+                                                                    <span className="days">
+                                                                        <FontAwesomeIcon icon={getIcon(task.category)}></FontAwesomeIcon>
+                                                                    </span>
+                                                                    <span className='isRemaining'>{task.category}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span className="days">
+                                                                        <FontAwesomeIcon icon={faClock}>
+                                                                            
+                                                                        </FontAwesomeIcon>
+                                                                    </span>
+                                                                    <span className='isRemaining'>{timeRem(task)} </span>
+                                                                </div>
+                                                            </div>
+                                                            <p>{task.description}</p>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <>
+                                                    {/* <div>Nothing to see here</div> */}
+                                                </>
+                                            )
+                                        }
+
+
+
+
+
+                                    </div>
+
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </>) : (
+                <>
+                    <div className="tasks-wrapper" style={{ display: visibleSection === 'All1' ? 'block' : 'none' }} id="All1">
+                        <div className="task-wrapper">
+                            {filteredTasks.length === 0 ? (
+                                <div className='animateBottom'>No submissions for <b> {isToday ? 'today' : ` ${day}, ${date}${separator}${month < 10 ? "0" + month : month}${separator}${year}`}</b></div>
+                            ) : (
+                                filteredTasks.map((currentTask, index) => (
+                                    ((selectedCategory === "All" || currentTask.category === selectedCategory) && currentTask.deleted === 0) && (currentTask.completed === 0) && (
+                                        <div className="taskKaPapa" key={index}>
+                                            <div className="task animateBottom">
+                                                <div className="taskNameDrop">
+                                                    <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle(index)}></FontAwesomeIcon>
+                                                    <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(currentTask.id)}></FontAwesomeIcon>
+                                                    <label className='newFlex' htmlFor={`item-${index + 1}`}>
+                                                        <input
+                                                            className="task-item"
+                                                            name="task"
+                                                            type="checkbox"
+                                                            id={`item-${index + 1}`}
+                                                            checked={currentTask.completed}
+                                                            onChange={() => { handleCompletionToggle(currentTask) }}
+                                                        />
+                                                    </label>
+                                                    <span className="label-text nowRap">{currentTask.name}</span>
+                                                </div>
+                                                <span className='taskDates'>
+                                                    {currentTask.start_date && <span className="tag assigned">{formatStartDate(currentTask.start_date)}</span>}
+                                                    -
+                                                    {currentTask.end_date && <span className="tag deadline">{formatEndDate(currentTask.end_date)}</span>}
+                                                </span>
+                                                {currentTask.tag && (
+                                                    <div className="tagAndTrash">
+                                                        <span className={`tag ${currentTask.tag.toLowerCase().replace(' ', '-')}`}>
+                                                            {currentTask.tag}
+                                                        </span>
+
+                                                        <span>
+                                                            <FontAwesomeIcon icon={faTrash} onClick={() => { handleDeletionToggle(currentTask) }} />
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {expandedTask === index && (
+                                                <div className="animateBottom task-description">
+                                                    <div className="taskDaysRemaining">
+                                                        <div>
+                                                            <span className="days">
+                                                                <FontAwesomeIcon icon={getIcon(currentTask.category)}></FontAwesomeIcon>
+                                                            </span>
+                                                            <span className='isRemaining'>{currentTask.category}</span>
+                                                        </div>
+                                                        <div>
+                                                            <span className="days">
+                                                                <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                                            </span>
+                                                            <span className='isRemaining'>{timeRem(currentTask)}</span>
+                                                        </div>
+                                                    </div>
+                                                    <p>{currentTask.description}</p>
+                                                </div>
+                                            )}
                                         </div>
-                                        <span className='taskDates'>
-                                            {currentTask.start_date && <span className="tag assigned">{formatStartDate(currentTask.start_date)}</span>}
-                                            -
-                                            {currentTask.end_date && <span className="tag deadline">{formatEndDate(currentTask.end_date)}</span>}
-                                        </span>
-                                        {currentTask.tag && (
-                                            <div className="tagAndTrash">
-                                                <span className={`tag ${currentTask.tag.toLowerCase().replace(' ', '-')}`}>
-                                                    {currentTask.tag}
-                                                </span>
-                                                <span>
-                                                    <FontAwesomeIcon icon={faTrash} onClick={() => { handleDeletionToggle(currentTask) }} />
-                                                </span>
+                                    )
+                                ))
+                            )}
+                        </div>
+
+                        <div className="header upcoming">Upcoming Tasks</div>
+                        <div className="task-wrapper w3-animate-bottom">
+                            {upcomingTasks.length === 0 ? (
+                                <div>No upcoming tasks</div>
+                            ) : (
+                                upcomingTasks.map((task, index) => (
+                                    ((selectedCategory === "All" || task.category === selectedCategory) && task.deleted === 0) && (task.completed === 0) && (
+                                    <div className="taskKaPapa" key={index}>
+                                        <div className="animateBottom task" key={index}>
+                                            <div className="taskNameDrop">
+                                                <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle1(index)}></FontAwesomeIcon>
+                                                <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(task.id)}></FontAwesomeIcon>
+                                                <label htmlFor={`item-${index + 1}`}>
+                                                    <input
+                                                        className="task-item"
+                                                        name="task"
+                                                        type="checkbox"
+                                                        id={`item-${index + 1}`}
+                                                        checked={task.completed}
+                                                        onChange={() => { handleCompletionToggle(task) }}
+                                                    />
+                                                </label>
+                                                <span className="label-text nowRap">{task.name}</span>
+                                            </div>
+                                            <span className='taskDates'>
+                                                {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
+                                                -
+                                                {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
+                                            </span>
+                                            {task.tag && (
+                                                <div className="tagAndTrash">
+                                                    <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
+                                                        {task.tag}
+                                                    </span>
+                                                    <span>
+                                                        <FontAwesomeIcon icon={faTrash} onClick={() => { handleDeletionToggle(task) }} />
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {expandedTask1 === index && (
+                                            <div className="animateBottom task-description">
+                                                <div className="taskDaysRemaining">
+                                                    <div>
+                                                        <span className="days">
+                                                            <FontAwesomeIcon icon={getIcon(task.category)}></FontAwesomeIcon>
+                                                        </span>
+                                                        <span className='isRemaining'>{task.category}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="days">
+                                                            <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                                        </span>
+                                                        <span className='isRemaining'>{timeRem(task)}</span>
+                                                    </div>
+                                                </div>
+                                                <p>{task.description}</p>
                                             </div>
                                         )}
                                     </div>
-                                    {expandedTask === index && (
-                                        <div className="animateBottom task-description">
-                                            <div className="taskDaysRemaining">
-                                                <div>
-                                                    <span className="days">
-                                                        <FontAwesomeIcon icon={faTeletype}></FontAwesomeIcon>
+                                    )
+                                ))
+                            )}
+                        </div>
+
+                        <div className="header Completed">Completed Tasks</div>
+                        <div className="task-wrapper w3-animate-bottom">
+                            {completedTasks.length === 0 ? (
+                                <div>No completed tasks</div>
+                            ) : (
+                                completedTasks.map((task, index) => (
+                                    ((selectedCategory === "All" || task.category === selectedCategory) && task.deleted === 0) && (task.completed === 1) && (
+                                    <div className="taskKaPapa" key={index}>
+                                        <div className="animateBottom task" key={index}>
+                                            <div className="taskNameDrop">
+                                                <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle2(index)}></FontAwesomeIcon>
+                                                <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(task.id)}></FontAwesomeIcon>
+                                                <label htmlFor={`item-${index + 1}`}>
+                                                    <input
+                                                        className="task-item"
+                                                        name="task"
+                                                        type="checkbox"
+                                                        id={`item-${index + 1}`}
+                                                        checked={task.completed}
+                                                        onChange={() => { handleCompletionToggle(task) }}
+                                                    />
+                                                </label>
+                                                <span className="label-text nowRap">{task.name}</span>
+                                            </div>
+                                            <span className='taskDates'>
+                                                {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
+                                                -
+                                                {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
+                                            </span>
+                                            {task.tag && (
+                                                <div className="tagAndTrash">
+                                                    <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
+                                                        {task.tag}
                                                     </span>
-                                                    <span className='isRemaining'>{currentTask.category}</span>
-                                                </div>
-                                                <div>
-                                                    <span className="days">
-                                                        <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                                    <span>
+                                                        <FontAwesomeIcon icon={faTrash} onClick={() => { handleDeletionToggle(task) }} />
                                                     </span>
-                                                    <span className='isRemaining'>{calculateRemainingDays(currentTask.end_date)} Days left</span>
                                                 </div>
-                                            </div>
-                                            <p>{currentTask.description}</p>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            )
-                        ))
-                    )}
-                </div>
-
-                <div className="header upcoming">Upcoming Tasks</div>
-                <div className="task-wrapper w3-animate-bottom">
-                    {upcomingTasks.length === 0 ? (
-                        <div>No upcoming tasks</div>
-                    ) : (
-                        upcomingTasks.map((task, index) => (
-                            <div className="taskKaPapa" key={index}>
-                                <div className="animateBottom task" key={index}>
-                                    <div className="taskNameDrop">
-                                        <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle1(index)}></FontAwesomeIcon>
-                                        <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(task.id)}></FontAwesomeIcon>
-                                        <label htmlFor={`item-${index + 1}`}>
-                                            <input
-                                                className="task-item"
-                                                name="task"
-                                                type="checkbox"
-                                                id={`item-${index + 1}`}
-                                                checked={task.completed}
-                                                onChange={() => { handleCompletionToggle(task) }}
-                                            />
-                                        </label>
-                                        <span className="label-text nowRap">{task.name}</span>
+                                        {expandedTask2 === index && (
+                                            <div className="animateBottom task-description">
+                                                <div className="taskDaysRemaining">
+                                                    <div>
+                                                        <span className="days">
+                                                            <FontAwesomeIcon icon={getIcon(task.category)}></FontAwesomeIcon>
+                                                        </span>
+                                                        <span className='isRemaining'>{task.category}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="days">
+                                                            <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
+                                                        </span>
+                                                        <span className='isRemaining'>
+                                                        {timeRem(task)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <p>{task.description}</p>
+                                            </div>
+                                        )}
                                     </div>
-                                    <span className='taskDates'>
-                                        {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
-                                        -
-                                        {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
-                                    </span>
-                                    {task.tag && (
-                                        <div className="tagAndTrash">
-                                            <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
-                                                {task.tag}
-                                            </span>
-                                            <span>
-                                                <FontAwesomeIcon icon={faTrash} onChange={() => { handleDeletionToggle(task) }} />
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                {expandedTask1 === index && (
-                                    <div className="animateBottom task-description">
-                                        <div className="taskDaysRemaining">
-                                            <div>
-                                                <span className="days">
-                                                    <FontAwesomeIcon icon={faTeletype}></FontAwesomeIcon>
-                                                </span>
-                                                <span className='isRemaining'>{task.category}</span>
-                                            </div>
-                                            <div>
-                                                <span className="days">
-                                                    <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                                                </span>
-                                                <span className='isRemaining'>{calculateRemainingDays(task.end_date)} Days left</span>
-                                            </div>
-                                        </div>
-                                        <p>{task.description}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                        ))
-                    )}
-                </div>
-
-                <div className="header Completed">Completed Tasks</div>
-                <div className="task-wrapper w3-animate-bottom">
-                    {completedTasks.length === 0 ? (
-                        <div>No completed tasks</div>
-                    ) : (
-                        completedTasks.map((task, index) => (
-                            <div className="taskKaPapa" key={index}>
-                                <div className="animateBottom task" key={index}>
-                                    <div className="taskNameDrop">
-                                        <FontAwesomeIcon className='.task-icon' icon={faCaretDown} onClick={() => handleTaskToggle2(index)}></FontAwesomeIcon>
-                                        <FontAwesomeIcon className='.task-icon' icon={faPenToSquare} onClick={() => handleEditClick(task.id)}></FontAwesomeIcon>
-                                        <label htmlFor={`item-${index + 1}`}>
-                                            <input
-                                                className="task-item"
-                                                name="task"
-                                                type="checkbox"
-                                                id={`item-${index + 1}`}
-                                                checked={task.completed}
-                                                onChange={() => { handleCompletionToggle(task) }}
-                                            />
-                                        </label>
-                                        <span className="label-text nowRap">{task.name}</span>
-                                    </div>
-                                    <span className='taskDates'>
-                                        {task.start_date && <span className="tag assigned">{formatStartDate(task.start_date)}</span>}
-                                        -
-                                        {task.end_date && <span className="tag deadline">{formatEndDate(task.end_date)}</span>}
-                                    </span>
-                                    {task.tag && (
-                                        <div className="tagAndTrash">
-                                            <span className={`tag ${task.tag.toLowerCase().replace(' ', '-')}`}>
-                                                {task.tag}
-                                            </span>
-                                            <span>
-                                                <FontAwesomeIcon icon={faTrash} onChange={() => { handleDeletionToggle(task) }} />
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                {expandedTask2 === index && (
-                                    <div className="animateBottom task-description">
-                                        <div className="taskDaysRemaining">
-                                            <div>
-                                                <span className="days">
-                                                    <FontAwesomeIcon icon={faTeletype}></FontAwesomeIcon>
-                                                </span>
-                                                <span className='isRemaining'>{task.category}</span>
-                                            </div>
-                                            <div>
-                                                <span className="days">
-                                                    <FontAwesomeIcon icon={faClock}></FontAwesomeIcon>
-                                                </span>
-                                                <span className='isRemaining'>{calculateRemainingDays(task.end_date)} Days left</span>
-                                            </div>
-                                        </div>
-                                        <p>{task.description}</p>
-                                    </div>
-                                )}
-                            </div>
-
-                        ))
-                    )}
-                </div>
-            </div>
-
+                                    )
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </>
+            )}
             <div className="tasks-wrapper" style={{ display: visibleSection === 'Important' ? 'block' : 'none' }} id="Important">
                 <KanbanBoard tasks={tasks} />
             </div>
@@ -441,22 +561,26 @@ export default function PageContent({ currenttasks, tasks, onAddTask, userId, se
 
             <button onClick={handleAddTaskClick} className='btn'>Add Task</button>
 
-            {isTaskFormVisible && (
-                <TaskForm
-                    onClose={handleCloseTaskForm}
-                    onAddTask={onAddTask}
-                    currenttasks={currenttasks}
-                    userId={userId}
-                />
-            )}
-            {showUpdateForm && currentTaskId && (
-                <UpdateTaskForm
-                    taskId={currentTaskId}
-                    userId={userId}
-                    onClose={handleCloseUpdateForm}
-                    onUpdateTask={handleUpdateTask}
-                />
-            )}
-        </div>
+            {
+                isTaskFormVisible && (
+                    <TaskForm
+                        onClose={handleCloseTaskForm}
+                        onAddTask={onAddTask}
+                        currenttasks={currenttasks}
+                        userId={userId}
+                    />
+                )
+            }
+            {
+                showUpdateForm && currentTaskId && (
+                    <UpdateTaskForm
+                        taskId={currentTaskId}
+                        userId={userId}
+                        onClose={handleCloseUpdateForm}
+                        onUpdateTask={handleUpdateTask}
+                    />
+                )
+            }
+        </div >
     );
 }

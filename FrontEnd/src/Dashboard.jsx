@@ -48,12 +48,12 @@ function Dashboard() {
   useEffect(() => {
 
 
-    // const interval = setInterval(() => {
+    const interval = setInterval(() => {
       if (currentUser) {
         console.log("have current user", currentUser)
         fetchTasks();
       }
-    // }, 100);
+    }, 100);
 
 
 
