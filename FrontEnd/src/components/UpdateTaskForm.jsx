@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CSS/card.css';
 
-export default function UpdateTaskForm({ taskId, onClose, onUpdateTask, userId }) {
+export default function UpdateTaskForm({ taskId, onClose, onUpdateTask, userId,fetchTasks }) {
   const [nameLength, setNameLength] = useState(0);
   const [descLength, setDescLength] = useState(0);
   const [task, setTask] = useState({
@@ -30,6 +30,7 @@ export default function UpdateTaskForm({ taskId, onClose, onUpdateTask, userId }
         });
         setNameLength(fetchedTask.name.length);
         setDescLength(fetchedTask.description.length);
+        fetchTasks()
       } catch (error) {
         console.log('Error fetching task:', error);
       }

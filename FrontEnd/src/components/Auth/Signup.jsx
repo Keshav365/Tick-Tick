@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../CSS/signup_login.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Signup() {
@@ -13,6 +13,7 @@ export default function Signup() {
 
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate(); // Use useNavigate hook
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +33,7 @@ export default function Signup() {
     try {
       await axios.post("http://localhost:8081/api/auth/register", inputs);
       console.log('Form submitted');
+      navigate("/login"); // Navigate to home page after successful signup
     } catch (err) {
       const errorMessage = err.response?.data || 'An error occurred';
       setError(errorMessage);

@@ -13,7 +13,20 @@ export const AuthContextProvider = ({ children }) => {
       withCredentials: true,
     });
 
-    setCurrentUser(res.data)
+    setCurrentUser(res.data);
+  };
+
+  const logout = async () => {
+    try{
+    await axios.post("http://localhost:8081/api/auth/logout", {}, { withCredentials: true });
+    setCurrentUser(null);
+    window.location.href = '/login';
+    console.log("Loging out bitch!!");
+    localStorage.removeItem("user");}
+    catch(err){
+      console.log(err);
+    }
+    
   };
 
   useEffect(() => {
@@ -21,7 +34,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [currentUser]);
 
   return (
-    <AuthContext.Provider value={{ currentUser, login }}>
+    <AuthContext.Provider value={{ currentUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

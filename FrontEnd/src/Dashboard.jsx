@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import LeftBar from './components/LeftBar';
 import PageContainer from './components/PageContainer';
 import RightBar from './components/RightBar';
-import TaskForm from './components/TaskForm';
 import { AuthContext } from './Context/AuthContext';
 
 function Dashboard() {
@@ -12,7 +12,9 @@ function Dashboard() {
   const [currentTasks, setCurrentTasks] = useState([]);
   const [upcomingTasks, setUpcomingTasks] = useState([]);
   const [completedTasks, setCompletedTasks] = useState([]);
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, logout } = useContext(AuthContext);
+  const [links, setLinks] = useState([]);
+  const navigate = useNavigate();
 
   const addTask = (newTask) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
@@ -22,8 +24,6 @@ function Dashboard() {
     try {
       const response = await axios.get(`http://localhost:8081/api/tasks?userId=${currentUser?.id}`);
       const fetchedTasks = response.data;
-
-      // Parsing dates and categorizing tasks
       const now = new Date();
       const current = fetchedTasks.filter(task => new Date(task.end_date) > now && task.completed !== 1);
       const upcoming = fetchedTasks.filter(task => new Date(task.start_date) > now);
@@ -39,31 +39,37 @@ function Dashboard() {
       setCurrentTasks(current);
       setUpcomingTasks(upcoming);
       setCompletedTasks(completed);
-      console.log(currentTasks)
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
   };
-
+  const fetchLink = async () => {
+    
+    try {
+      const response = await axios.get(`http://localhost:8081/api/links?userId=4`);
+      console.log('Links Response:', response.data);
+      const fetchedLinks = response.data;
+      setLinks(fetchedLinks);
+    } catch (error) {
+      console.error('Error fetching tasks or links:', error);
+    }
+  };
   useEffect(() => {
-
-
-    const interval = setInterval(() => {
-      if (currentUser) {
-        console.log("have current user", currentUser)
-        fetchTasks();
-      }
-    }, 100);
-
-
-
-  }, [currentUser]);
+    if (!currentUser) {
+      navigate('/login'); // Redirect to login if no currentUser
+    } else {
+      fetchTasks();
+      fetchLink()
+    }
+  }, [currentUser, navigate]);
 
   return (
     <>
-      <div className='task-manager0'></div>
+      {/* <button onClick={logout} className='btn'>Add Task</button> */}
+      {/* <button className='Logout' onClick={logout}>Logout</button> */}
+
       <div className='task-manager'>
-        {currentUser.id}
+        {/* {currentUser.id} */}
         <PageContainer
           tasks={tasks}
           currentTasks={currentTasks}
@@ -71,12 +77,15 @@ function Dashboard() {
           completedTasks={completedTasks}
           onAddTask={addTask}
           userId={currentUser?.id}
+          logoutFunc={logout}
+          fetchTasks={fetchTasks}
+          fetchLink={fetchLink}
+          links={links}
         />
-        <RightBar UserData={userData} tasks={tasks} currentTasks={currentTasks} />
+        <RightBar logoutFunc={logout} UserData={userData} tasks={tasks} currentTasks={currentTasks} />
       </div>
     </>
   );
 }
-
 
 export default Dashboard;

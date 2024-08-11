@@ -5,11 +5,12 @@ const app = express();
 import authRoutes from './routes/auths.js';
 import userRoutes from './routes/users.js';
 import taskRoutes from './routes/tasks.js';
+import linkRoutes from './routes/links.js';
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 const corsOptions = {
-    origin: 'http://localhost:5173', // Allow your frontend origin
+    origin: ['http://localhost:5173','http://localhost:5174'], // Allow your frontend origin
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
   };
 app.use(cors(corsOptions));
@@ -18,6 +19,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes); 
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/links', linkRoutes);
 
 app.listen(8081, () => {
     console.log("Server running on port 8081");

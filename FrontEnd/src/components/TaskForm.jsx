@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './CSS/card.css';
 
-export default function TaskForm({ onClose, onAddTask, userId }) {
+export default function TaskForm({ onClose, onAddTask, userId, fetchTasks}) {
   const [nameLength, setNameLength] = useState(0);
   const [descLength, setDescLength] = useState(0);
   const [task, setTask] = useState({
@@ -38,7 +38,8 @@ export default function TaskForm({ onClose, onAddTask, userId }) {
       console.log('Response from server:', res.data);
       onAddTask(res.data); // Use the data returned from the server
       onClose();
-    } catch (error) {
+      fetchTasks(); 
+    }catch (error) {
       console.log('Error adding task:', error);
       if (error.response) {
         console.log('Error response data:', error.response.data);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
-export default function LeftBar({ onCategoryChange, onDateChange }) {
+export default function LeftBar({ onCategoryChange, logoutFunc, onDateChange }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -13,7 +13,7 @@ export default function LeftBar({ onCategoryChange, onDateChange }) {
 
   const handleSubmit = () => {
     setIsModalOpen(false);
-    console.log('Selected Date:', selectedDate);
+    // console.log('Selected Date:', selectedDate);
     onDateChange(selectedDate);
   };
 
@@ -29,7 +29,7 @@ export default function LeftBar({ onCategoryChange, onDateChange }) {
     setSelectedCategory(category);
     onCategoryChange(category);
   };
-  console.log(selectedDate)
+  // console.log(selectedDate)
 
   let newDate = selectedDate;
   let separator = "/";
@@ -52,7 +52,11 @@ export default function LeftBar({ onCategoryChange, onDateChange }) {
       <div className="left-bar">
         <div className="upper-part">
           <div className="actions">
-            <div className="circle"></div>
+            <div className="circle" onClick={logoutFunc}>
+              <div className="circleSon c1"></div>
+              <div className="circleSon c2"></div>
+              <div className="circleSon c3"></div>
+            </div>
             <div className="circle-2"></div>
           </div>
         </div>
@@ -108,19 +112,19 @@ export default function LeftBar({ onCategoryChange, onDateChange }) {
               </svg>
               <span>General</span>
             </li>
-            <li class={`item ${selectedCategory === "Festival" ? 'selected' : ' '}`} onClick={() => handleCategoryClick('Festival')}>
+            <li className={`item ${selectedCategory === "Festival" ? 'selected' : ' '}`} onClick={() => handleCategoryClick('Festival')}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="feather feather-trending-up">
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                className="feather feather-trending-up">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
                 <polyline points="17 6 23 6 23 12" />
               </svg>
               <span>Festival</span>
             </li>
-            <li class={`item ${selectedCategory === "Concert" ? 'selected' : ' '}`} onClick={() => handleCategoryClick('Concert')}>
+            <li className={`item ${selectedCategory === "Concert" ? 'selected' : ' '}`} onClick={() => handleCategoryClick('Concert')}>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="feather feather-zap">
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                className="feather feather-zap">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
               </svg>
               <span>Concerts</span>
