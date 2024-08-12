@@ -15,7 +15,7 @@ import linkRoutes from './routes/links.js';
 app.use(express.json());
 
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN, // Allow multiple origins
+    origin: 'https://sicktick-a0hjbdgnbxf5bndn.eastus-01.azurewebsites.net/', // Allow multiple origins
     credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
 
@@ -26,7 +26,7 @@ app.use('/auths', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/links', linkRoutes);
 
-const PORT = process.env.PORT;
+const PORT = 8080;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

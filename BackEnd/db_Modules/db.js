@@ -6,13 +6,13 @@ import fs from 'fs';
 dotenv.config();
 
 export const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: 'sicktickazure.mysql.database.azure.com',
+    user: 'shivamAzure',
+    password: 'Keshavkutti1',
+    database: 'sicktick',
     ssl: {
-        rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true',
-        // ca: process.env.DB_SSL_CA ? fs.readFileSync(process.env.DB_SSL_CA, 'utf8') : undefined
+        // rejectUnauthorized: false,
+        // ca: fs.readFileSync('BaltimoreCyberTrustRoot.crt.pem', 'utf8') // Ensure the path is correct
     }
 });
 
