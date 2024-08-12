@@ -22,6 +22,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(cookieParser());
 
+// Define the /rand route
+app.get('/rand', (req, res) => {
+    res.send("hello ji");
+});
+
+// Set up your other routes
 app.use('/auths', authRoutes); 
 app.use('/api/tasks', taskRoutes);
 app.use('/api/links', linkRoutes);
