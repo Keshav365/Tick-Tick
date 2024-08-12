@@ -59,6 +59,7 @@ export default function UpdateTaskForm({ taskId, onClose, onUpdateTask, userId,f
       const res = await axios.put(`http://localhost:8081/api/tasks/${taskId}`, taskWithUserId);
       onUpdateTask(res.data);
       onClose();
+      fetchTasks()
     } catch (error) {
       console.log('Error updating task:', error);
       if (error.response) {

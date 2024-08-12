@@ -67,7 +67,7 @@ export const createTask = async (req, res) => {
 
   try {
     const result = await query(
-      'INSERT INTO tasks (name, description, start_date, end_date, category, tag, userId) VALUES (?, ?, ?, ?, ?, ?, ?) ORDER BY end_date',
+      'INSERT INTO tasks (name, description, start_date, end_date, category, tag, userId) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [name, description, startDate, endDate, category, tag, userId]
     );
 

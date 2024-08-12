@@ -38,6 +38,7 @@ export default function LinkForm({ onClose, userId, fetchLink }) {
   };
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
 
     if (!isValidYouTubeLink(link.url)) {
@@ -87,71 +88,71 @@ export default function LinkForm({ onClose, userId, fetchLink }) {
         },
         data: linkWithUserId
       });
-const handleSubmit = async (e) => {
-  e.preventDefault();
+      const handleSubmit = async (e) => {
+        e.preventDefault();
 
-  if (!isValidYouTubeLink(link.url)) {
-    alert(`Please enter a valid YouTube ${link.type} link.`);
-    return;
-  }
+        if (!isValidYouTubeLink(link.url)) {
+          alert(`Please enter a valid YouTube ${link.type} link.`);
+          return;
+        }
 
-  const id = extractId(link.url);
-  if (!id) {
-    alert(`Unable to extract ${link.type} ID. Please check the URL.`);
-    return;
-  }
+        const id = extractId(link.url);
+        if (!id) {
+          alert(`Unable to extract ${link.type} ID. Please check the URL.`);
+          return;
+        }
 
-  const embeddedUrl =
-    link.type === 'video'
-      ? `https://www.youtube.com/embed/${id}?enablejsapi=1`
-      : `https://www.youtube.com/embed/videoseries?list=${id}&enablejsapi=1`;
+        const embeddedUrl =
+          link.type === 'video'
+            ? `https://www.youtube.com/embed/${id}?enablejsapi=1`
+            : `https://www.youtube.com/embed/videoseries?list=${id}&enablejsapi=1`;
 
-  const linkWithUserId = {
-    name: link.name,
-    link: embeddedUrl,
-    userId: userId
-  };
+        const linkWithUserId = {
+          name: link.name,
+          link: embeddedUrl,
+          userId: userId
+        };
 
-  console.log('link object being sent:', linkWithUserId);
+        console.log('link object being sent:', linkWithUserId);
 
-  try {
-    const baseUrl = "http://localhost:8081/api/links";
-    const method = "PUT";
-    const contentType = "application/json";
+        try {
+          const baseUrl = "http://localhost:8081/api/links";
+          const method = "PUT";
+          const contentType = "application/json";
 
-    console.log('Sending request:', {
-      method,
-      url: `${baseUrl}/${userId}`,
-      headers: {
-        'Content-Type': contentType
-      },
-      data: linkWithUserId
-    });
-fetchLink()
-    const res = await axios({
-      method: method,
-      url: `${baseUrl}/${userId}`,
-      headers: {
-        'Content-Type': contentType
-      },
-      data: linkWithUserId
-    });
-fetchLink()
-    console.log('Response from server:', res.data);
-    onClose();
-  } catch (error) {
-    console.log('Error adding link:', error);
-    if (error.response) {
-      console.log('Error response data:', error.response.data);
-      console.log('Error response status:', error.response.status);
-      console.log('Error response headers:', error.response.headers);
-    } else if (error.request) {
-      console.log('Error request data:', error.request);
-    } else {
-      console.log('Error message:', error.message);
-    }
-  }
-};
+          console.log('Sending request:', {
+            method,
+            url: `${baseUrl}/${userId}`,
+            headers: {
+              'Content-Type': contentType
+            },
+            data: linkWithUserId
+          });
+          fetchLink()
+          const res = await axios({
+            method: method,
+            url: `${baseUrl}/${userId}`,
+            headers: {
+              'Content-Type': contentType
+            },
+            data: linkWithUserId
+          });
+          fetchLink()
+          console.log('Response from server:', res.data);
+          onClose();
+        } catch (error) {
+          console.log('Error adding link:', error);
+          if (error.response) {
+            console.log('Error response data:', error.response.data);
+            console.log('Error response status:', error.response.status);
+            console.log('Error response headers:', error.response.headers);
+          } else if (error.request) {
+            console.log('Error request data:', error.request);
+          } else {
+            console.log('Error message:', error.message);
+          }
+        }
+      };
 
       console.log('Response from server:', res.data);
       onClose();
@@ -167,6 +168,7 @@ fetchLink()
         console.log('Error message:', error.message);
       }
     }
+    fetchLink()
   };
 
 

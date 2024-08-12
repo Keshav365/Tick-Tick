@@ -31,7 +31,7 @@ export default function Signup() {
       return;
     }
     try {
-      await axios.post("http://localhost:8081/api/auth/register", inputs);
+      await axios.post("http://localhost:8081/auths/register", inputs);
       console.log('Form submitted');
       navigate("/login"); // Navigate to home page after successful signup
     } catch (err) {

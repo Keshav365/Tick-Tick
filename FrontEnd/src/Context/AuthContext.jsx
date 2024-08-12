@@ -7,18 +7,22 @@ export const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
-
+  
   const login = async (inputs) => {
-    const res = await axios.post("http://localhost:8081/api/auth/login", inputs, {
-      withCredentials: true,
-    });
-
-    setCurrentUser(res.data);
+    
+    try{
+      const res = await axios.post("http://localhost:8081/auths/login", inputs, {
+        withCredentials: true,
+      });
+      setCurrentUser(res.data);
+    }catch(err){
+      console.log(err);
+    }
   };
 
   const logout = async () => {
     try{
-    await axios.post("http://localhost:8081/api/auth/logout", {}, { withCredentials: true });
+    await axios.post("http://localhost:8081/auths/logout", {}, { withCredentials: true });
     setCurrentUser(null);
     window.location.href = '/login';
     console.log("Loging out bitch!!");

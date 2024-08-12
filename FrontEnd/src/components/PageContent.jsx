@@ -79,6 +79,29 @@ export default function PageContent({ currenttasks, selectedDateFromLD, tasks, o
             console.error('Error updating task Deletion:', error);
         }
     };
+    const handleLinkDeletionToggle = (link) => {
+        handleLinkDeletionToggle1(link);
+    };
+
+    const handleLinkDeletionToggle1 = async (link) => {
+        try {
+            const newDeleteStatus = !link.deleted; // Toggle the deletion status
+            console.log("oh No, you tryna delete me:\n link id: ", link.id, "\n link name: ", link.name, "\n Delete Status: ", link.deleted ? 'Deleted' : 'Zinda hun abhi');
+
+            // Update the deletion status in the backend
+            await axios.put(`http://localhost:8081/api/links/toggle-deletion/${link.id}`, {
+                deleted: newDeleteStatus,
+                userId: link.userId // Pass the current user's ID
+            });
+
+            // Fetch the updated list of links after successful deletion toggle
+            fetchLink();
+        } catch (error) {
+            console.error('Error updating link deletion:', error);
+        }
+    };
+
+
 
     const handleEditClick = (taskId) => {
 
@@ -118,6 +141,7 @@ export default function PageContent({ currenttasks, selectedDateFromLD, tasks, o
         setIsTaskFormVisible(false);
     };
     const handleAddLinkClick = () => {
+        fetchLink()
         setIsLinkFormVisible(true);
     };
 
@@ -252,10 +276,10 @@ export default function PageContent({ currenttasks, selectedDateFromLD, tasks, o
             <div className="header">
                 {selectedCategory === 'deleted' ? (
                     <>
-                        <div className="headerIcon">
+                        {/* <div className="headerIcon">
                             <FontAwesomeIcon icon={faArrowUp} />
                             <FontAwesomeIcon icon={faArrowDown} />
-                        </div>
+                        </div> */}
                         &nbsp; &nbsp;
                         <div className="headerName">Trash
                         </div>
@@ -645,8 +669,14 @@ export default function PageContent({ currenttasks, selectedDateFromLD, tasks, o
                 ) :
                     links.map((link, index) => (
                         <>
-                            <div key={index} className="header upcoming">{link.name} </div>
-                            <div >
+                            <div className="linkHeader">
+
+                                <div key={index} className="linkNam">{link.name} </div>
+                                <span>
+                                    <FontAwesomeIcon icon={faTrash} onClick={() => { handleLinkDeletionToggle(link) }} />
+                                </span>
+                            </div>
+                            <div className='uPort'>
                                 <iframe width="560" height="315"
                                     src={link.link}
                                     frameBorder="0" allowFullScreen></iframe>

@@ -151,8 +151,7 @@ export default function RightBar({ logoutFunc, tasks, UserData, currentTasks }) 
                                         {expandedTask === index && currentTask.description && (
                                             <div className="task-description1">
                                                 <p className='p2 animateBottom'>
-                                                    {/* {currentTask.description} */}
-                                                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit nostrum sed ab ad voluptate vero quasi neque eius saepe minima. Debitis, quam impedit aperiam amet ipsum ullam vero ex fugiat?
+                                                    {currentTask.description}
                                                 </p>
 
                                             </div>

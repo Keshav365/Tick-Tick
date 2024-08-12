@@ -3,6 +3,7 @@ import { query } from '../db_Modules/db.js';
 
 // Mark a link as deleted
 export const toggleLinkDeletion = async (req, res) => {
+    
     const linkId = req.params.id; // Get linkId from request parameters
     const { deleted, userId } = req.body; // Expect a boolean value for completed status and userId
 
@@ -68,7 +69,7 @@ export const getLinks = async (req, res) => {
         const params = [];
 
         if (linkId && userId) {
-            sql += ' AND id = ? AND userId = ?';
+            sql += ' AND id = ? AND userId = ? order by Ctime';
             params.push(linkId, userId);
         } else if (userId) {
             sql += ' AND userId = ? ORDER BY Ctime DESC';
